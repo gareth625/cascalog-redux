@@ -1,0 +1,69 @@
+;; gorilla-repl.fileformat = 1
+
+;; **
+;;; # Cascalog-Redux
+;;; 
+;;; A Gorilla REPL worksheet that we can use to sketch out the solution to the problems. Start with the namespace declaration and library includes, then define the data sets for convenience and then get going :)
+;; **
+
+;; @@
+(ns cascalog-redux.core
+  (:require [cascalog.api :refer :all]
+            [cascalog-redux.taps :as bike-trip-data]))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;; <=
+
+;; **
+;;; The sample file should contain on a few tens of lines so we can easily check transforms without overwhelm with the repl with printout. Can start streaming to file when we're ready.
+;; **
+
+;; @@
+(def bike-trip-data-sample
+  "data/bike_trip_data_sample.csv")
+
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;cascalog-redux.core/bike-trip-data-full</span>","value":"#'cascalog-redux.core/bike-trip-data-full"}
+;; <=
+
+;; **
+;;; This is the full data sets. 16MB, 144,015 rows.
+;; **
+
+;; @@
+(def bike-trip-data-full
+  "data/bike_trip_data.csv")
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;cascalog-redux.core/bike-trip-data-full</span>","value":"#'cascalog-redux.core/bike-trip-data-full"}
+;; <=
+
+;; @@
+(defn stream-file-to-stdout
+  "Streams the input bike trip data file to stdout. You probably don't want to stream the whole file ;)"
+  [input & args]
+  (let [bad-rows-sink (hfs-textline "br")]
+    (?- (bike-trip-data/out-sink "stdout")
+        (bike-trip-data/bike-trip-data input bad-rows-sink)
+        (:trap bad-rows-sink))))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;cascalog-redux.core/stream-file-to-stdout</span>","value":"#'cascalog-redux.core/stream-file-to-stdout"}
+;; <=
+
+;; **
+;;; Running the above function on the sample data streams it straight to the stdout. Perhaps usefully the output (there's plenty of guff) remains in the lein gorilla terminal.
+;; **
+
+;; @@
+(stream-file-to-stdout bike-trip-data-sample)
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;; <=
+
+;; @@
+
+;; @@

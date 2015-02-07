@@ -7,6 +7,7 @@
                  [de.javakaffee/kryo-serializers "0.23"]]
   :main ^:skip-aot cascalog-redux.core
   :target-path "target/%s"
+  :plugins [[lein-gorilla "0.3.4"]]
   :profiles {:provided {:dependencies [[org.apache.hadoop/hadoop-core "1.0.3"]]}
              :uberjar {:aot :all}}
   :jvm-opts ["-Xmx2g"])

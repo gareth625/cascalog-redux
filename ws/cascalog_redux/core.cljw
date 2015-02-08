@@ -7,9 +7,9 @@
 ;; **
 
 ;; @@
-(ns cascalog-redux.core
+(ns cascalog-redux.core-ws
   (:require [cascalog.api :refer :all]
-            [cascalog-redux.taps :as bike-trip-data]))
+            [cascalog-redux.taps :as bike-trip-data] :reload-all))
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
@@ -25,7 +25,7 @@
 
 ;; @@
 ;; =>
-;;; {"type":"html","content":"<span class='clj-var'>#&#x27;cascalog-redux.core/bike-trip-data-full</span>","value":"#'cascalog-redux.core/bike-trip-data-full"}
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;cascalog-redux.core-ws/bike-trip-data-sample</span>","value":"#'cascalog-redux.core-ws/bike-trip-data-sample"}
 ;; <=
 
 ;; **
@@ -37,7 +37,7 @@
   "data/bike_trip_data.csv")
 ;; @@
 ;; =>
-;;; {"type":"html","content":"<span class='clj-var'>#&#x27;cascalog-redux.core/bike-trip-data-full</span>","value":"#'cascalog-redux.core/bike-trip-data-full"}
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;cascalog-redux.core-ws/bike-trip-data-full</span>","value":"#'cascalog-redux.core-ws/bike-trip-data-full"}
 ;; <=
 
 ;; @@
@@ -50,7 +50,7 @@
         (:trap bad-rows-sink))))
 ;; @@
 ;; =>
-;;; {"type":"html","content":"<span class='clj-var'>#&#x27;cascalog-redux.core/stream-file-to-stdout</span>","value":"#'cascalog-redux.core/stream-file-to-stdout"}
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;cascalog-redux.core-ws/stream-file-to-stdout</span>","value":"#'cascalog-redux.core-ws/stream-file-to-stdout"}
 ;; <=
 
 ;; **
@@ -59,6 +59,34 @@
 
 ;; @@
 (stream-file-to-stdout bike-trip-data-sample)
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;; <=
+
+;; @@
+(defn stream-file
+  "Streams the input bike trip data file to stdout. You probably don't want to stream the whole file ;)"
+  [input output & args]
+  (let [dest (bike-trip-data/out-sink output)
+        bad-rows-sink (hfs-textline "br")]
+    (?- dest
+        (bike-trip-data/bike-trip-data input bad-rows-sink)
+        (:trap bad-rows-sink))))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;cascalog-redux.core-ws/stream-file</span>","value":"#'cascalog-redux.core-ws/stream-file"}
+;; <=
+
+;; @@
+(stream-file bike-trip-data-sample "stdout")
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;; <=
+
+;; @@
+(stream-file bike-trip-data-full "dest3")
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}

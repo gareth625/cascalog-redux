@@ -2,25 +2,31 @@
   (:require [clj-time.core :as t]
             [clj-time.format :as f]))
 
-;; The (try-)as-long functions I've pinched from my day job. Thanks Ray.
+;; The as-long functions I've pinched, and modified, from my day job. Thanks Ray.
 (defn as-long
+  "Attempt to coerce the argument `x` to a long. Throws if conversion fails."
   [x]
-  "Coerce the argument `x` to a long."
-  (cond
-   (= (class x) java.lang.Long) x
-   (= (class x) java.lang.String) (Long/parseLong x)
-   :else (long x)))
-
-(defn try-as-long
-  "Attempt to coerce the argument `x` to a long. Return nil on error."
-  [x]
-  (try (as-long x) (catch Exception _ nil)))
+  (try (cond
+        (= (class x) java.lang.Long) x
+        (= (class x) java.lang.String) (Long/parseLong x)
+        :else (long x))
+       (catch Exception e (throw
+                           (Exception. (str "Could not parse: "
+                                            x
+                                            " as a long.\n"
+                                            (.getMessage e)))))))
 
 (def ^:private month-day-year-hour-minute (f/formatter "MM/dd/yy HH:mm"))
 
-(defn try-as-date-time
+(defn as-date-time
   "Attempt to coerce the argument 'x' to a date-time object.
 
-  Expected time format: MM-dd-yy HH:MM e.g. 8/29/13 14:13."
+  Expected time format: MM-dd-yy HH:mm e.g. 8/29/13 14:13.
+
+  Throws if the conversion fails."
   [x]
-  (try (f/parse month-day-year-hour-minute x) (catch Exception _ nil)))
+  (try (f/parse month-day-year-hour-minute x)
+       (catch Exception e (throw (Exception. (str "Could not parse: "
+                                                  x
+                                                  " as data time \"MM-dd-yy HH:mm\" e.g. \"8/29/13 14:13\".\n"
+                                                  (.getMessage e)))))))

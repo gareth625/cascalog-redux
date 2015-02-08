@@ -17,17 +17,17 @@
 (def ^:private bike-trip-data-fields-and-classes
   ;; The order must match the column ordering in the CSV file in order to
   ;; correctly parse the columns.
-  (array-map "!trip_id" util/try-as-long
-             "!duration" util/try-as-long
-             "!start_date" util/try-as-date-time
+  (array-map "!trip_id" util/as-long
+             "!duration" util/as-long
+             "!start_date" util/as-date-time
              "!start_station" identity
-             "!start_terminal" util/try-as-long
-             "!end_date" util/try-as-date-time
+             "!start_terminal" util/as-long
+             "!end_date" util/as-date-time
              "!end_station" identity
-             "!end_terminal" util/try-as-long
-             "!bike_num" util/try-as-long
+             "!end_terminal" util/as-long
+             "!bike_num" util/as-long
              "!subscription_type" identity
-             "!zip_code" util/try-as-long))
+             "!zip_code" util/as-long))
 
 (def bike-trip-data-fields
   "Vector of the Cascalog variables to assign to each of the bike trip columns."

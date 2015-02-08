@@ -8,6 +8,7 @@
   [x]
   (try (cond
         (= (class x) java.lang.Long) x
+        (= x "") nil
         (= (class x) java.lang.String) (Long/parseLong x)
         :else (long x))
        (catch Exception e (throw
@@ -25,7 +26,8 @@
 
   Throws if the conversion fails."
   [x]
-  (try (f/parse month-day-year-hour-minute x)
+  (try (when-not (= x "")
+         (f/parse month-day-year-hour-minute x))
        (catch Exception e (throw (Exception. (str "Could not parse: "
                                                   x
                                                   " as data time \"MM-dd-yy HH:mm\" e.g. \"8/29/13 14:13\".\n"

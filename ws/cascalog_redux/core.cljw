@@ -9,7 +9,9 @@
 ;; @@
 (ns cascalog-redux.core-ws
   (:require [cascalog.api :refer :all]
-            [cascalog-redux.taps :as bike-trip-data] :reload-all))
+            [cascalog.logic.ops :as c]
+            [cascalog-redux.taps :as bike-trip-data]
+            [clj-time.core :as t] :reload-all))
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
@@ -86,10 +88,54 @@
 ;; <=
 
 ;; @@
-(stream-file bike-trip-data-full "dest3")
+(stream-file bike-trip-data-full "dest5")
 ;; @@
 ;; =>
 ;;; {"type":"html","content":"<span class='clj-nil'>nil</span>","value":"nil"}
+;; <=
+
+;; @@
+(defn get-interval
+  [t1 t2]
+  (if (t/before? t1 t2)
+    (t/interval t1 t2)
+    (t/interval t2 t1)))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;cascalog-redux.core-ws/get-interval</span>","value":"#'cascalog-redux.core-ws/get-interval"}
+;; <=
+
+;; @@
+(defn problem-1
+  [input output]
+  (let [dest (bike-trip-data/out-sink output)
+        br-sink (hfs-textline "br")
+        trip-data (bike-trip-data/bike-trip-data input br-sink)]
+    (?<- dest
+         [?avg_trip_duration_minutes]
+         
+         (trip-data :>> bike-trip-data/bike-trip-data-fields)
+         ;; ((mapfn [t1 t2] (if (t/before? t1 t2) (t/interval t1 t2) (t/interval t2 t1))) :< !start_date !end_date :> ?trip_duration)
+         (get-interval !start_date !end_date :> ?trip_duration)
+         (t/in-minutes ?trip_duration :> ?trip_duration_minutes)
+         (c/avg ?trip_duration_minutes :> ?avg_trip_duration_minutes)
+         
+         
+         (:trap br-sink))))
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-var'>#&#x27;cascalog-redux.core-ws/problem-1</span>","value":"#'cascalog-redux.core-ws/problem-1"}
+;; <=
+
+;; @@
+(problem-1 bike-trip-data-sample "stdout")
+;; @@
+
+;; @@
+(problem-1 )
+;; @@
+;; =>
+;;; {"type":"html","content":"<span class='clj-unkown'>#&lt;Interval 2015-01-01T00:00:00.000Z/2016-01-01T00:00:00.000Z&gt;</span>","value":"#<Interval 2015-01-01T00:00:00.000Z/2016-01-01T00:00:00.000Z>"}
 ;; <=
 
 ;; @@

@@ -27,7 +27,7 @@
              "!end_terminal" util/as-long
              "!bike_num" util/as-long
              "!subscription_type" identity
-             "!zip_code" util/as-long))
+             "!zip_code" identity))
 
 (def bike-trip-data-fields
   "Vector of the Cascalog variables to assign to each of the bike trip columns."
@@ -39,8 +39,8 @@
    The input should contain only a single line to parse. It will ignore all
    other lines in the input."
   [line & {:keys [delimiter classes]}]
-
-  (let [parsed-line (clojure.string/split line delimiter)]
+  (let [n-columns 11
+        parsed-line (clojure.string/split line delimiter n-columns)]
     (if-not (empty? classes)
       (map #(%1 %2) classes parsed-line) ;; Applies the predicate from index i
                                          ;; to the ith entry in the parsed-line

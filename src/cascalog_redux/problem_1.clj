@@ -13,6 +13,15 @@
     (t/interval t1 t2)
     (t/interval t2 t1)))
 
+(defn- get-trip-time-in-minutes
+  [trip-data br-sink]
+  (<- [?trip_duration_minutes]
+
+      (trip-data :>> bike-trip-data/bike-trip-data-fields)
+
+      (get-interval !start_date !end_date :> ?trip_duration)
+      (t/in-minutes ?trip_duration :> ?trip_duration_minutes)))
+
 (defn problem-1
   [input output]
   (let [dest (bike-trip-data/out-sink output)
@@ -21,11 +30,20 @@
     (?<- dest
          [?avg_trip_duration_minutes]
 
-         (trip-data :>> bike-trip-data/bike-trip-data-fields)
-
-         (get-interval !start_date !end_date :> ?trip_duration)
-         (t/in-minutes ?trip_duration :> ?trip_duration_minutes)
-
+         ((get-trip-time-in-minutes trip-data br-sink) :> ?trip_duration_minutes)
          (c/avg ?trip_duration_minutes :> ?avg_trip_duration_minutes)
+
+         (:trap br-sink))))
+
+(defn problem-1-hist
+  [input output]
+  (let [dest (bike-trip-data/out-sink output)
+        br-sink (hfs-textline "br")
+        trip-data (bike-trip-data/bike-trip-data input br-sink)]
+    (?<- dest
+         [?trip_duration_minutes ?count]
+
+         ((get-trip-time-in-minutes trip-data br-sink) :> ?trip_duration_minutes)
+         (c/count ?count)
 
          (:trap br-sink))))

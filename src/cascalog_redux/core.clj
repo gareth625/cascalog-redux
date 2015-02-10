@@ -12,10 +12,14 @@
   "The full data set. 16MB, 114,015 rows and 11 columns."
   "data/bike_trip_data.csv")
 
-(defn -main
-  "Streams the input bike trip data file to stdout. You probably don't want to stream the whole file ;)"
-  [input & args]
+(defn stream-file-to-stdout
+  [input]
   (let [bad-rows-sink (hfs-textline "br")]
     (?- (bike-trip-data/out-sink "stdout")
         (bike-trip-data/bike-trip-data input bad-rows-sink)
         (:trap bad-rows-sink))))
+
+(defn -main
+  "Streams the input bike trip data file to stdout. You probably don't want to stream the whole file ;)"
+  [input & args]
+  (stream-file-to-stdout input))

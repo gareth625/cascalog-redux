@@ -19,6 +19,15 @@
         (bike-trip-data/bike-trip-data input bad-rows-sink)
         (:trap bad-rows-sink))))
 
+(defn stream-file
+  "Streams the input bike trip data file to stdout. You probably don't want to stream the whole file ;)"
+  [input output]
+  (let [dest (bike-trip-data/out-sink output)
+        bad-rows-sink (hfs-textline "br")]
+    (?- dest
+        (bike-trip-data/bike-trip-data input bad-rows-sink)
+        (:trap bad-rows-sink))))
+
 (defn -main
   "Streams the input bike trip data file to stdout. You probably don't want to stream the whole file ;)"
   [input & args]

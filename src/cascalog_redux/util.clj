@@ -32,3 +32,10 @@
                                                   x
                                                   " as data time \"MM-dd-yy HH:mm\" e.g. \"8/29/13 14:13\".\n"
                                                   (.getMessage e)))))))
+
+(defn get-interval
+  "Returns a JODA time interval object between two date-time instances."
+  [t1 t2]
+  (if (t/before? t1 t2)
+    (t/interval t1 t2)
+    (t/interval t2 t1)))

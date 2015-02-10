@@ -5,13 +5,8 @@
   (:require [cascalog.api :refer :all]
             [cascalog.logic.ops :as c]
             [cascalog-redux.taps :as bike-trip-data]
+            [cascalog-redux.util :as u]
             [clj-time.core :as t]))
-
-(defn- get-interval
-  [t1 t2]
-  (if (t/before? t1 t2)
-    (t/interval t1 t2)
-    (t/interval t2 t1)))
 
 (defn- get-trip-time-in-minutes
   [trip-data br-sink]
@@ -19,7 +14,7 @@
 
       (trip-data :>> bike-trip-data/bike-trip-data-fields)
 
-      (get-interval !start_date !end_date :> ?trip_duration)
+      (u/get-interval !start_date !end_date :> ?trip_duration)
       (t/in-minutes ?trip_duration :> ?trip_duration_minutes)))
 
 (defn problem-1
